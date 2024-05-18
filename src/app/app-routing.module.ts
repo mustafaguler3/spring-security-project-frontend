@@ -8,6 +8,7 @@ import { PostDetailComponent } from './post-detail/post-detail.component';
 import { PostResolverService } from './service/post-resolver.service';
 import { ProfileComponent } from './profile/profile.component';
 import { authenticationGuard } from './guard/authentication.guard';
+import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {path:"login",component: LoginComponent},
@@ -20,7 +21,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes)
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

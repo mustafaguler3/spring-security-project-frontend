@@ -1,1 +1,141 @@
-<p>navbar works!</p>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light static-top sticky-top">
+    <div class="container">
+      <a routerLink="/home" class="navbar-brand d-flex align-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <strong>&#920;GulerPortal</strong>
+      </a>
+      <a *ngIf="showNavbar" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#search">
+        Search
+      </a>
+      <div class="" id="navbarResponsive">
+        <ul *ngIf="showNavbar; else loggedOut" class="navbar-nav ml-auto">
+          <li class="nav-item" style="display: inline-block;padding:0px 20px;">
+            <a class="nav-link" style="cursor:pointer;" data-toggle="modal" data-target="#newPost"><i class="fa fa-camera-retro"
+                style="font-size: 23px;"></i></a>
+          </li>
+          <li class="nav-item" style="display: inline-block;padding:0px 20px;">
+            <a class="nav-link" style="cursor:pointer;" (click)="getUserProfile(user.username)"><i class="fa fa-user"
+                style="font-size: 23px;"></i></a>
+          </li>
+          <li class="nav-item" style="display: inline-block;padding:0px 20px;">
+            <a class="nav-link" style="cursor:pointer;" (click)="logOut()"><i class="fa fa-sign-out" style="font-size: 23px;"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- logout template -->
+  <ng-template #loggedOut>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="/login" style="margin-right:15px;">Log In
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="/register">Sign Up
+        </a>
+      </li>
+    </ul>
+  </ng-template>
+  
+  <div *ngIf="progress == 100 && showSuccessAlert" class="container" style="margin-top: 10px;">
+    <!-- <h1 class="mt-4 mb-3"></h1> -->
+    <div class="row">
+      <div class="col-md-8">
+        <div class="alert alert-success" role="alert">
+          <h4 class="alert-heading">SUCCESS <i class="fa fa-check" aria-hidden="true"></i></h4>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <p>New post was added successfully. Click <a href="{{newPostURL}}">here</a>
+            to view.</p>
+          <hr/>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="postFail" class="container" style="margin-top: 10px;">
+    <!-- <h1 class="mt-4 mb-3"></h1> -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-danger" role="alert">
+          <h4 class="alert-heading">OOPSS!! <i class="fa fa-warning" aria-hidden="true"></i></h4>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <p>Some error occured. Please try again.</p>
+          <hr />
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- post modal -->
+  <div id="newPost" class="modal fade">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form #postForm="ngForm" (ngSubmit)="onNewPost(postForm.value)" enctype="multipart/form-data">
+            <div class="modal-body">
+              <input type="hidden" class="form-control" name="username" placeholder="username" [(ngModel)]="userName"
+                required />
+              <input type="hidden" class="form-control" name="location" placeholder="location" [(ngModel)]="location"
+                required />
+              <div class="form-group">
+                <input style="display:none;" #fileToUpload (change)="onFileSelected($event)" type="file" class="form-control-file"
+                  name="photo" placeholder="photo" accept="image/*" ngModel required #fileInput="ngModel" />
+                <button type="button" class="btn btn-primary bt btn-sm" (click)="fileToUpload.click()">
+                  Pick Photo: {{ photoName }}
+                </button>
+              </div>
+              <div class="form-group" *ngIf="!fileInput.invalid">
+                <input type="text" class="form-control" name="caption" placeholder="Add a caption (Optional)" required
+                  ngModel />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="dismissOnSubmitPost" type="button" class="btn btn-danger btn-sm" data-dismiss="modal">
+                Close
+              </button>
+              <button [disabled]="fileInput.invalid" type="submit" class="btn btn-primary btn-sm">Post</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- search modal -->
+  <div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <span id="closeSearchModal" aria-hidden="true" style="display: none;">&times;</span>
+        <div class="modal-body">
+          <p class="text-primary text-center">User Search</p>
+          <form #searchUsersForm="ngForm" class="form-signin">
+            <div class="form-group">
+              <input type="text" (ngModelChange)="onSearchUsers($event)" class="form-control" name="username" placeholder="Username..."
+                required ngModel />
+            </div>
+          </form>
+        </div>
+        <div class="">
+          <p class="text-primary text-center" *ngIf="searchedUser?.length > 0">List Of Users Found</p>
+          <div *ngFor="let userSearch of searchedUser" class="list-group">
+            <a (click)="getSearchUserProfile(userSearch?.username)" class="list-group-item list-group-item-action">
+              <img class="rounded-circle" width="45" src="{{ userHost }}/{{ userSearch?.id }}.png" alt="{{ userSearch?.name }}" />
+              {{ userSearch.username }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
